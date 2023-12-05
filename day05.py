@@ -1,3 +1,6 @@
+import sys
+
+_STARTING_NUMBER = 1
 _EXAMPLE_INPUT = """seeds: 79 14 55 13
 
 seed-to-soil map:
@@ -311,6 +314,7 @@ def input_to_output(input_value: int, mappings: dict, key: str) -> int:
 
 def take_seed_to_location(seed: int, mappings: dict) -> int:
     list = [
+        #'seed_range',
         'seed_to_soil',
         'soil_to_fertilizer',
         'fertilizer_to_water',
@@ -322,10 +326,10 @@ def take_seed_to_location(seed: int, mappings: dict) -> int:
 
     v = seed
     for key in list:
-        print('start v: ' + str(v))
-        print('key: ' + str(key))
+        #print('start v: ' + str(v))
+        #print('key: ' + str(key))
         v = input_to_output(v, mappings, key)
-        print('ending v: ' + str(v))
+        #print('ending v: ' + str(v))
 
     return v
 
@@ -340,6 +344,51 @@ def part1(input_str: str):
 
     print(min(location_list))
 
+def part2(input_str: str) -> None:
+    d = parse_input(input_str)
+    location_list = []
+    split_arrays = [d['seeds'][i:i+2] for i in range(0, len(d['seeds']), 2)]
+
+    minimum_location = sys.maxsize
+    idx = -1
+    for pair in split_arrays:
+        idx += 1
+        if idx < _STARTING_NUMBER:
+            continue
+        starting_value = pair[0]
+        ending_value = pair[1] + starting_value
+
+        for seed in range(starting_value, ending_value):
+            location = take_seed_to_location(seed, d)
+            #print('location: ' + str(location))
+            if (location < minimum_location):
+                minimum_location = location
+                print("New minimum location: " + str(minimum_location))
+            #location_list.append(location)
+            #print('seed: ' + str(seed) + ' location: ' + str(location))
+
+        print("finished pair")
+
+    print(minimum_location)
+    #print(min(location_list))
 
 if __name__ == '__main__':
-    part1(_REAL_INPUT)
+    # didn't want to start with the actually parallelizing the code, so I just spun up terminals for each pair and changed the starting number for the seed index
+    # I think it would've made sense to take each range and create a set of those values, that way we were never processing the same values
+    # Not sure if there's a better approach that brute force... but eventually we got the right answer.
+    _STARTING_NUMBER=9
+    part2(_REAL_INPUT)
+
+
+"""
+Minimums:
+- 316960383
+- 120582180 <-- smaller than this
+- 51399228
+- 1241009111
+- 972973391
+- 972973391
+- 642320287
+- 535088217
+- 2865447566
+"""
